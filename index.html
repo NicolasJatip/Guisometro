@@ -184,6 +184,19 @@
   }
   .chip b{display:block;font-size:1.05rem;margin-top:3px;color:var(--text)}
 
+  .gps-hint{
+    margin-top:14px;opacity:0;transition:opacity .5s ease .4s;
+    position:relative;z-index:1;
+  }
+  .gps-hint.show{opacity:1}
+  .gps-hint a{
+    color:var(--muted);font-size:.78rem;text-decoration:none;
+    border-bottom:1px dotted rgba(201,183,159,.4);
+    cursor:pointer;transition:color .2s;
+  }
+  .gps-hint a:hover{color:var(--accent)}
+  .gps-hint.done a{pointer-events:none;border-bottom:none;opacity:.7}
+
   footer{margin-top:34px;color:var(--muted);font-size:.78rem;line-height:1.6;max-width:480px;position:relative;z-index:1}
   footer a{color:var(--accent)}
 
@@ -274,6 +287,10 @@
         <div class="chip">🌡️ Ahora<b id="mNow">—</b></div>
         <div class="chip">🌙 Mín. noche<b id="mNight">—</b></div>
       </div>
+
+      <div class="gps-hint" id="gpsHint">
+        <a href="#" id="gpsLink">📍 ¿La temperatura no te cierra? Tocá acá</a>
+      </div>
     </div>
 
     <footer>
@@ -289,7 +306,8 @@
         verdict=$('verdict'), verdictBig=$('verdictBig'), verdictDesc=$('verdictDesc'), verdictSrc=$('verdictSrc'),
         meta=$('meta'), mNow=$('mNow'), mNight=$('mNight'),
         steamBox=$('steamBox'), bgParticles=$('bgParticles'),
-        footerMeme=$('footerMeme');
+        footerMeme=$('footerMeme'),
+        gpsHint=$('gpsHint'), gpsLink=$('gpsLink');
 
   // ---------- Footer memero ----------
   const footerMemes=[
@@ -469,6 +487,8 @@
   async function runTest(){
     btn.disabled=true;
     verdict.classList.remove('show'); meta.classList.remove('show');
+    gpsHint.classList.remove('show','done');
+    gpsLink.textContent='📍 ¿La temperatura no te cierra? Tocá acá';
     steamBox.classList.remove('active');
     document.body.classList.remove(...themes);
     gaugeBox.classList.add('loading');
@@ -488,35 +508,10 @@
       await sleep(700);
 
       gaugeBox.classList.remove('loading');
-
-      const decisive = w.nightMin;
-      const r = guisoScale(decisive);
-      const ing = Math.round(tempToIng(decisive));
-
-      // Animar gauge con temperatura
-      setNeedle(decisive);
-      animateNumber(Math.round(w.now ?? decisive), Math.round(decisive), '°C');
-      tempLabel.textContent='mín. de la noche';
-
-      // Datos
-      mNow.textContent = (w.now!=null? Math.round(w.now)+'°C' : '—');
-      mNight.textContent = Math.round(w.nightMin)+'°C';
-
-      // Veredicto
-      verdictBig.textContent = `${r.emoji} ${r.title}`;
-      verdictDesc.textContent = `"${r.desc}"`;
-      verdictSrc.textContent = r.src;
-      verdict.classList.remove('guiso','noguiso');
-      verdict.classList.add(ing>=60?'guiso':'noguiso','show');
+      updateResults(w);
       meta.classList.add('show');
-
-      // Efectos visuales
-      setTheme(decisive);
-      spawnParticles(ing);
-      if(ing>=40) steamBox.classList.add('active');
-
+      gpsHint.classList.add('show');
       status.textContent='';
-      footerMeme.textContent = footerMemes[Math.floor(Math.random()*footerMemes.length)];
     }catch(err){
       gaugeBox.classList.remove('loading');
       tempVal.innerHTML='⚠️';
@@ -528,6 +523,67 @@
     }
   }
 
+  // ---------- GPS preciso (si el usuario toca el hint) ----------
+  function updateResults(w){
+    const decisive = w.nightMin;
+    const r = guisoScale(decisive);
+    const ing = Math.round(tempToIng(decisive));
+
+    setNeedle(decisive);
+    animateNumber(Math.round(w.now ?? decisive), Math.round(decisive), '°C');
+    tempLabel.textContent='mín. de la noche';
+
+    mNow.textContent = (w.now!=null? Math.round(w.now)+'°C' : '—');
+    mNight.textContent = Math.round(w.nightMin)+'°C';
+
+    verdictBig.textContent = `${r.emoji} ${r.title}`;
+    verdictDesc.textContent = `"${r.desc}"`;
+    verdictSrc.textContent = r.src;
+    verdict.classList.remove('guiso','noguiso');
+    verdict.classList.add(ing>=60?'guiso':'noguiso','show');
+
+    setTheme(decisive);
+    spawnParticles(ing);
+    if(ing>=40) steamBox.classList.add('active');
+    else steamBox.classList.remove('active');
+    footerMeme.textContent = footerMemes[Math.floor(Math.random()*footerMemes.length)];
+  }
+
+  async function requestGPS(e){
+    e.preventDefault();
+    if(gpsHint.classList.contains('done')) return;
+    if(!navigator.geolocation){
+      status.textContent='Tu navegador no soporta geolocalización.';
+      return;
+    }
+    gpsLink.textContent='📍 Pidiendo ubicación…';
+    status.textContent='📍 Pidiendo tu ubicación exacta…';
+
+    navigator.geolocation.getCurrentPosition(
+      async(pos)=>{
+        try{
+          status.textContent='🛰️ Recalculando con GPS…';
+          const w = await getWeather(pos.coords.latitude, pos.coords.longitude);
+          updateResults(w);
+          gpsLink.textContent='📍 Ubicación actualizada ✓';
+          gpsHint.classList.add('done');
+          status.textContent='';
+        }catch(err){
+          status.textContent='No pude consultar el clima con tu ubicación GPS.';
+          gpsLink.textContent='📍 ¿La temperatura no te cierra? Tocá acá';
+          console.error(err);
+        }
+      },
+      (err)=>{
+        gpsLink.textContent='📍 ¿La temperatura no te cierra? Tocá acá';
+        if(err.code===1) status.textContent='Permiso de ubicación denegado. No pasa nada, bolu.';
+        else status.textContent='No se pudo obtener tu ubicación GPS.';
+      },
+      {enableHighAccuracy:true, timeout:10000, maximumAge:300000}
+    );
+  }
+
+  gpsLink.addEventListener('click', requestGPS);
   btn.addEventListener('click', runTest);
 })();
 </script>
