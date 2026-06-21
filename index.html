@@ -233,11 +233,11 @@
         <svg viewBox="0 0 200 130" id="gauge" aria-hidden="true">
           <defs>
             <linearGradient id="arcGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%"  stop-color="#ff5a3c"/>
-              <stop offset="30%" stop-color="#ffd23f"/>
-              <stop offset="60%" stop-color="#5fe39b"/>
-              <stop offset="85%" stop-color="#4fa3ff"/>
-              <stop offset="100%" stop-color="#9d4dff"/>
+              <stop offset="0%"  stop-color="#9d4dff"/>
+              <stop offset="25%" stop-color="#4fa3ff"/>
+              <stop offset="50%" stop-color="#5fe39b"/>
+              <stop offset="75%" stop-color="#ffd23f"/>
+              <stop offset="100%" stop-color="#ff5a3c"/>
             </linearGradient>
           </defs>
           <!-- track -->
@@ -245,9 +245,9 @@
           <!-- colored arc -->
           <path d="M20 110 A80 80 0 0 1 180 110" fill="none" stroke="url(#arcGrad)" stroke-width="16" stroke-linecap="round" opacity=".95"/>
           <!-- ticks labels -->
-          <text x="18" y="125" fill="#c9b79f" font-size="8" text-anchor="middle">0</text>
-          <text x="100" y="20" fill="#c9b79f" font-size="8" text-anchor="middle">50</text>
-          <text x="182" y="125" fill="#c9b79f" font-size="8" text-anchor="middle">100</text>
+          <text x="18" y="125" fill="#c9b79f" font-size="8" text-anchor="middle">-10°</text>
+          <text x="100" y="20" fill="#c9b79f" font-size="8" text-anchor="middle">15°</text>
+          <text x="182" y="125" fill="#c9b79f" font-size="8" text-anchor="middle">40°</text>
           <!-- needle -->
           <g class="needle" id="needle">
             <path d="M100 110 L100 38" stroke="#fff3e6" stroke-width="4" stroke-linecap="round"/>
@@ -256,8 +256,8 @@
           </g>
         </svg>
         <div class="gauge-center">
-          <div class="temp-val" id="tempVal">--<small>%</small></div>
-          <div class="temp-label" id="tempLabel">índice guisero</div>
+          <div class="temp-val" id="tempVal">--<small>°C</small></div>
+          <div class="temp-label" id="tempLabel">mín. de la noche</div>
         </div>
       </div>
 
@@ -361,12 +361,14 @@
     return 50;
   }
 
-  function ingToAngle(ing){
-    return -90 + (Math.max(0,Math.min(100,ing))/100)*180;
+  function tempToAngle(t){
+    const min=-10, max=40;
+    const clamped=Math.max(min,Math.min(max,t));
+    return -90 + ((clamped-min)/(max-min))*180;
   }
 
-  function setNeedle(ing){
-    needle.style.transform = `rotate(${ingToAngle(ing)}deg)`;
+  function setNeedle(t){
+    needle.style.transform = `rotate(${tempToAngle(t)}deg)`;
   }
 
   // ---------- Escala guisera — frases de memes argentos ----------
@@ -491,10 +493,10 @@
       const r = guisoScale(decisive);
       const ing = Math.round(tempToIng(decisive));
 
-      // Animar gauge
-      setNeedle(ing);
-      animateNumber(0, ing, '%');
-      tempLabel.textContent='índice guisero';
+      // Animar gauge con temperatura
+      setNeedle(decisive);
+      animateNumber(Math.round(w.now ?? decisive), Math.round(decisive), '°C');
+      tempLabel.textContent='mín. de la noche';
 
       // Datos
       mNow.textContent = (w.now!=null? Math.round(w.now)+'°C' : '—');
