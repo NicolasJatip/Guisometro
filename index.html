@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Guisómetro 🍲 — ¿Es noche de guiso?</title>
+<meta name="description" content="Mirá tu clima y descubrí si esta noche es Noche de Guiso. Cuanto más frío, más ideal." />
+<style>
+  :root{
+    --bg1:#1a1410;
+    --bg2:#2b1d12;
+    --accent:#ff8c3b;
+    --accent2:#ffd23f;
+    --cold:#4fa3ff;
+    --hot:#ff5a3c;
+    --text:#fff3e6;
+    --muted:#c9b79f;
+    --card:rgba(255,255,255,.05);
+    --border:rgba(255,255,255,.12);
+    --glow-color:transparent;
+    --glow-size:0px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,sans-serif;
+    color:var(--text);
+    background:var(--bg1);
+    min-height:100%;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:24px 16px 48px;
+    overflow-x:hidden;
+    transition:background .8s ease;
+  }
+
+  /* Fondo atmosférico animado */
+  .bg-layer{
+    position:fixed;inset:0;z-index:0;pointer-events:none;
+    transition:opacity 1.2s ease;
+  }
+  .bg-gradient{
+    position:fixed;inset:0;
+    background:
+      radial-gradient(ellipse 800px 500px at 50% 30%, var(--glow-color) 0%, transparent 70%),
+      radial-gradient(1200px 600px at 50% -10%, #3a2616 0%, transparent 60%);
+    transition:all 1.5s ease;
+  }
+  .bg-particles{position:fixed;inset:0;overflow:hidden}
+  .bg-particle{
+    position:absolute;
+    border-radius:50%;
+    opacity:0;
+    animation:floatUp linear infinite;
+  }
+  @keyframes floatUp{
+    0%{transform:translateY(100vh) scale(0);opacity:0}
+    10%{opacity:var(--p-opacity,.15)}
+    90%{opacity:var(--p-opacity,.15)}
+    100%{transform:translateY(-20vh) scale(1);opacity:0}
+  }
+
+  .wrap{width:100%;max-width:560px;text-align:center;position:relative;z-index:1}
+
+  /* Header + olla */
+  header{position:relative}
+  header h1{
+    font-size:clamp(2.2rem,7vw,3.4rem);
+    letter-spacing:.5px;
+    background:linear-gradient(90deg,var(--accent2),var(--accent));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    line-height:1.05;
+  }
+  header .sub{color:var(--muted);margin-top:6px;font-size:.95rem}
+
+  .pot-wrap{position:relative;display:inline-block}
+  .pot{font-size:2.4rem;display:inline-block;animation:bob 3s ease-in-out infinite}
+  @keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+
+  /* Humito de la olla */
+  .steam-box{
+    position:absolute;
+    left:50%;top:-8px;
+    transform:translateX(-50%);
+    width:40px;height:60px;
+    pointer-events:none;
+    opacity:0;
+    transition:opacity .8s ease;
+  }
+  .steam-box.active{opacity:1}
+  .steam-puff{
+    position:absolute;
+    bottom:0;
+    border-radius:50%;
+    background:rgba(255,243,230,.5);
+    filter:blur(3px);
+    animation:puff ease-out infinite;
+  }
+  .steam-puff:nth-child(1){left:8px;width:8px;height:8px;animation-duration:2s;animation-delay:0s}
+  .steam-puff:nth-child(2){left:18px;width:6px;height:6px;animation-duration:2.4s;animation-delay:.4s}
+  .steam-puff:nth-child(3){left:12px;width:10px;height:10px;animation-duration:2.8s;animation-delay:.8s}
+  .steam-puff:nth-child(4){left:22px;width:7px;height:7px;animation-duration:2.2s;animation-delay:1.2s}
+  .steam-puff:nth-child(5){left:5px;width:9px;height:9px;animation-duration:2.6s;animation-delay:.6s}
+  .steam-puff:nth-child(6){left:16px;width:5px;height:5px;animation-duration:2s;animation-delay:1s}
+  @keyframes puff{
+    0%{transform:translateY(0) scale(.3);opacity:.7}
+    50%{opacity:.5}
+    100%{transform:translateY(-55px) translateX(var(--drift,5px)) scale(1.3);opacity:0}
+  }
+  .steam-puff:nth-child(odd){--drift:-6px}
+  .steam-puff:nth-child(even){--drift:8px}
+
+  .card{
+    margin-top:26px;
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:22px;
+    padding:26px 22px;
+    backdrop-filter:blur(6px);
+    position:relative;
+    overflow:hidden;
+  }
+  .card-glow{
+    position:absolute;inset:0;pointer-events:none;
+    border-radius:22px;
+    background:radial-gradient(ellipse at 50% 80%,var(--glow-color) 0%,transparent 60%);
+    opacity:.15;
+    transition:all 1.2s ease;
+  }
+
+  /* Gauge */
+  .gauge-box{position:relative;width:min(340px,80vw);margin:0 auto}
+  svg{width:100%;height:auto;display:block;overflow:visible}
+  .needle{transform-box:fill-box;transform-origin:50% 100%;transition:transform 1.4s cubic-bezier(.34,1.56,.64,1)}
+  .gauge-center{
+    position:absolute;left:0;right:0;top:54%;
+    display:flex;flex-direction:column;align-items:center;gap:2px;
+  }
+  .temp-val{font-size:2.6rem;font-weight:800;line-height:1}
+  .temp-val small{font-size:1.2rem;font-weight:600;opacity:.8}
+  .temp-label{font-size:.8rem;color:var(--muted);text-transform:uppercase;letter-spacing:2px}
+
+  /* Button */
+  .btn{
+    margin-top:26px;
+    font-size:1.15rem;font-weight:700;
+    color:#2b1d12;
+    background:linear-gradient(90deg,var(--accent2),var(--accent));
+    border:none;border-radius:999px;
+    padding:16px 34px;cursor:pointer;
+    box-shadow:0 8px 24px rgba(255,140,59,.35);
+    transition:transform .15s ease, box-shadow .15s ease, opacity .2s;
+    position:relative;z-index:1;
+  }
+  .btn:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(255,140,59,.5)}
+  .btn:active{transform:translateY(1px)}
+  .btn:disabled{opacity:.6;cursor:wait;transform:none}
+
+  .status{margin-top:10px;min-height:24px;color:var(--muted);font-size:.95rem;position:relative;z-index:1}
+
+  /* Verdict */
+  .verdict{
+    margin-top:24px;opacity:0;transform:translateY(10px);
+    transition:opacity .5s ease, transform .5s ease;
+    position:relative;z-index:1;
+  }
+  .verdict.show{opacity:1;transform:none}
+  .verdict .big{font-size:clamp(1.6rem,6vw,2.4rem);font-weight:800;line-height:1.1}
+  .verdict .desc{color:var(--muted);margin-top:8px;font-size:1.05rem;font-style:italic;line-height:1.4}
+  .verdict .src{color:var(--muted);opacity:.6;font-size:.75rem;margin-top:6px;font-style:normal}
+  .verdict.guiso .big{color:var(--accent2);text-shadow:0 0 24px rgba(255,210,63,.4)}
+  .verdict.noguiso .big{color:var(--cold)}
+
+  .meta{
+    margin-top:20px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+    opacity:0;transition:opacity .5s ease .2s;
+    position:relative;z-index:1;
+  }
+  .meta.show{opacity:1}
+  .chip{
+    background:var(--card);border:1px solid var(--border);
+    border-radius:14px;padding:10px 14px;font-size:.85rem;min-width:90px;
+  }
+  .chip b{display:block;font-size:1.05rem;margin-top:3px;color:var(--text)}
+
+  footer{margin-top:34px;color:var(--muted);font-size:.78rem;line-height:1.6;max-width:480px;position:relative;z-index:1}
+  footer a{color:var(--accent)}
+
+  .loading svg .needle{animation:wiggle .35s linear infinite alternate}
+  @keyframes wiggle{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
+  .spin{display:inline-block;animation:spin 1s linear infinite}
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* Themes por resultado */
+  body.theme-hot{--glow-color:rgba(255,90,60,.25)}
+  body.theme-warm{--glow-color:rgba(255,180,60,.2)}
+  body.theme-mild{--glow-color:rgba(255,140,59,.25)}
+  body.theme-guiso{--glow-color:rgba(255,160,40,.35)}
+  body.theme-cold{--glow-color:rgba(79,163,255,.25)}
+  body.theme-freeze{--glow-color:rgba(120,140,255,.3)}
+  body.theme-extreme{--glow-color:rgba(157,77,255,.35)}
+</style>
+</head>
+<body>
+  <!-- Fondo atmosférico -->
+  <div class="bg-gradient"></div>
+  <div class="bg-particles" id="bgParticles"></div>
+
+  <div class="wrap">
+    <header>
+      <h1>
+        <span class="pot-wrap">
+          <div class="steam-box" id="steamBox">
+            <div class="steam-puff"></div>
+            <div class="steam-puff"></div>
+            <div class="steam-puff"></div>
+            <div class="steam-puff"></div>
+            <div class="steam-puff"></div>
+            <div class="steam-puff"></div>
+          </div>
+          <span class="pot">🍲</span>
+        </span>
+        <br>Guisómetro
+      </h1>
+      <p class="sub">¿Está para hacer un guisito o no da? Dale, metele al botón y averiguá.</p>
+    </header>
+
+    <div class="card">
+      <div class="card-glow"></div>
+      <div class="gauge-box" id="gaugeBox">
+        <!-- Gauge SVG -->
+        <svg viewBox="0 0 200 130" id="gauge" aria-hidden="true">
+          <defs>
+            <linearGradient id="arcGrad" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0%"  stop-color="#ff5a3c"/>
+              <stop offset="30%" stop-color="#ffd23f"/>
+              <stop offset="60%" stop-color="#5fe39b"/>
+              <stop offset="85%" stop-color="#4fa3ff"/>
+              <stop offset="100%" stop-color="#9d4dff"/>
+            </linearGradient>
+          </defs>
+          <!-- track -->
+          <path d="M20 110 A80 80 0 0 1 180 110" fill="none" stroke="rgba(255,255,255,.10)" stroke-width="16" stroke-linecap="round"/>
+          <!-- colored arc -->
+          <path d="M20 110 A80 80 0 0 1 180 110" fill="none" stroke="url(#arcGrad)" stroke-width="16" stroke-linecap="round" opacity=".95"/>
+          <!-- ticks labels -->
+          <text x="18" y="125" fill="#c9b79f" font-size="8" text-anchor="middle">0</text>
+          <text x="100" y="20" fill="#c9b79f" font-size="8" text-anchor="middle">50</text>
+          <text x="182" y="125" fill="#c9b79f" font-size="8" text-anchor="middle">100</text>
+          <!-- needle -->
+          <g class="needle" id="needle">
+            <path d="M100 110 L100 38" stroke="#fff3e6" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="100" cy="110" r="9" fill="#fff3e6"/>
+            <circle cx="100" cy="110" r="4" fill="#2b1d12"/>
+          </g>
+        </svg>
+        <div class="gauge-center">
+          <div class="temp-val" id="tempVal">--<small>%</small></div>
+          <div class="temp-label" id="tempLabel">índice guisero</div>
+        </div>
+      </div>
+
+      <button class="btn" id="testBtn">🔥 Dale, metele</button>
+      <div class="status" id="status">Apretá el botón, bolu.</div>
+
+      <div class="verdict" id="verdict">
+        <div class="big" id="verdictBig"></div>
+        <div class="desc" id="verdictDesc"></div>
+        <div class="src" id="verdictSrc"></div>
+      </div>
+
+      <div class="meta" id="meta">
+        <div class="chip">🌡️ Ahora<b id="mNow">—</b></div>
+        <div class="chip">🌙 Mín. noche<b id="mNight">—</b></div>
+      </div>
+    </div>
+
+    <footer>
+      Se fija la mínima pronosticada de esta noche (20:00–08:00).
+      Si baja de <b>10&nbsp;°C</b> → 🍲 ¡Noche de Guiso! ·
+      Clima: <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> ·
+      Ubicación aprox. por IP ·
+      Hecho con 🧉 en Argentina.
+    </footer>
+  </div>
+
+<script>
+(function(){
+  const $ = id => document.getElementById(id);
+  const btn=$('testBtn'), status=$('status'), needle=$('needle'),
+        tempVal=$('tempVal'), tempLabel=$('tempLabel'), gaugeBox=$('gaugeBox'),
+        verdict=$('verdict'), verdictBig=$('verdictBig'), verdictDesc=$('verdictDesc'), verdictSrc=$('verdictSrc'),
+        meta=$('meta'), mNow=$('mNow'), mNight=$('mNight'),
+        steamBox=$('steamBox'), bgParticles=$('bgParticles');
+
+  // ---------- Fondo: partículas flotantes ----------
+  function spawnParticles(ing){
+    bgParticles.innerHTML='';
+    const count = Math.floor(ing/5);
+    for(let i=0;i<count;i++){
+      const d = document.createElement('div');
+      d.className='bg-particle';
+      const size = 2+Math.random()*4;
+      const dur = 8+Math.random()*12;
+      const delay = Math.random()*dur;
+      const left = Math.random()*100;
+      const hue = ing>=60 ? (25+Math.random()*20) : (200+Math.random()*40);
+      const opacity = .06+Math.random()*.12;
+      d.style.cssText=`
+        width:${size}px;height:${size}px;left:${left}%;
+        background:hsl(${hue},80%,65%);
+        animation-duration:${dur}s;animation-delay:-${delay}s;
+        --p-opacity:${opacity};
+      `;
+      bgParticles.appendChild(d);
+    }
+  }
+
+  // ---------- Theme por resultado ----------
+  const themes=['theme-hot','theme-warm','theme-mild','theme-guiso','theme-cold','theme-freeze','theme-extreme'];
+  function setTheme(t){
+    document.body.classList.remove(...themes);
+    if(t>=30) document.body.classList.add('theme-hot');
+    else if(t>=20) document.body.classList.add('theme-warm');
+    else if(t>=15) document.body.classList.add('theme-mild');
+    else if(t>=10) document.body.classList.add('theme-guiso');
+    else if(t>=5)  document.body.classList.add('theme-cold');
+    else if(t>=0)  document.body.classList.add('theme-freeze');
+    else           document.body.classList.add('theme-extreme');
+  }
+
+  // ---------- ING (Índice Guisero Nacional) ----------
+  function tempToIng(t){
+    const bp=[
+      [40, 0], [30, 20], [20, 40], [15, 60], [10, 80], [5, 90], [0, 95], [-10, 100]
+    ];
+    if(t>=bp[0][0]) return bp[0][1];
+    if(t<=bp[bp.length-1][0]) return bp[bp.length-1][1];
+    for(let i=0;i<bp.length-1;i++){
+      const [t1,i1]=bp[i], [t2,i2]=bp[i+1];
+      if(t<=t1 && t>=t2) return i1+(i2-i1)*((t1-t)/(t1-t2));
+    }
+    return 50;
+  }
+
+  function ingToAngle(ing){
+    return -90 + (Math.max(0,Math.min(100,ing))/100)*180;
+  }
+
+  function setNeedle(ing){
+    needle.style.transform = `rotate(${ingToAngle(ing)}deg)`;
+  }
+
+  // ---------- Escala guisera — frases de memes argentos ----------
+  function guisoScale(t){
+    if(t>=30) return {emoji:'🥵',    title:'Tengo la boca seca',
+      desc:'Tengo la boca seca... ¿no tenés algo para tomar?',
+      src:'— El Secreto de sus Ojos'};
+    if(t>=20) return {emoji:'☀️',    title:'Pero dale...',
+      desc:'¡Un escopetazo en el pecho! Comete un bife de chorizo, pelotudo.',
+      src:'— Mozos (Rodriguez Galati)'};
+    if(t>=15) return {emoji:'🍲',    title:'Y sí hijo',
+      desc:'¿Guiso de fideos moñito? ¡Y SÍ HIJO!',
+      src:'— Johnny Primero de Mazo'};
+    if(t>=10) return {emoji:'🍲🔥', title:'Alto Guiso',
+      desc:'Con 15 pesos sale un paty. ¡Con 15 pesos me hago alto guiso!',
+      src:'— El pibe del guiso'};
+    if(t>=5)  return {emoji:'❄️🍲', title:'Ha venido el fresco',
+      desc:'La mierda che... ¡cómo se nota que ha venido el fresco eh! ¡Qué lo parió, qué friazazón!',
+      src:'— Se congeló del frío'};
+    if(t>=0)  return {emoji:'🧣🍲', title:'Andás con frío',
+      desc:'¿Qué te has puesto una bufanda? ¿Andás con frío? Pero qué lindo te quedó.',
+      src:'— Oscar, andás con frío'};
+    return            {emoji:'☢️🍲', title:'Guiso Nacional',
+      desc:'Oíd mortales, el grito sagrado...',
+      src:'— Himno Nacional Argentino'};
+  }
+
+  // ---------- APIs ----------
+  async function fetchJSON(url, timeout=8000){
+    const ctrl = new AbortController();
+    const t = setTimeout(()=>ctrl.abort(), timeout);
+    try{
+      const r = await fetch(url, {signal:ctrl.signal});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      return await r.json();
+    }finally{ clearTimeout(t); }
+  }
+
+  async function ipLocation(){
+    const providers = [
+      async()=>{ const d=await fetchJSON('https://ipwho.is/');
+        if(d&&d.success!==false&&d.latitude) return {lat:d.latitude,lon:d.longitude}; throw 0; },
+      async()=>{ const d=await fetchJSON('https://get.geojs.io/v1/ip/geo.json');
+        if(d&&d.latitude) return {lat:parseFloat(d.latitude),lon:parseFloat(d.longitude)}; throw 0; },
+      async()=>{ const d=await fetchJSON('https://ipapi.co/json/');
+        if(d&&d.latitude) return {lat:d.latitude,lon:d.longitude}; throw 0; },
+    ];
+    for(const p of providers){
+      try{ return await p(); }catch(e){/* siguiente */}
+    }
+    throw new Error('sin ubicación');
+  }
+
+  async function getWeather(lat,lon){
+    const url='https://api.open-meteo.com/v1/forecast'
+      +`?latitude=${lat}&longitude=${lon}`
+      +'&current=temperature_2m'
+      +'&hourly=temperature_2m'
+      +'&timezone=auto&forecast_days=2';
+    const d = await fetchJSON(url);
+    const now = d.current ? d.current.temperature_2m : null;
+
+    const times = d.hourly.time, temps = d.hourly.temperature_2m;
+    let nightMin = Infinity;
+    const startIdx = times.findIndex(t=>{
+      const h=new Date(t).getHours();
+      return h>=20;
+    });
+    if(startIdx>=0){
+      for(let i=startIdx; i<times.length; i++){
+        const h=new Date(times[i]).getHours();
+        if(h>=20 || h<=8){
+          if(temps[i] < nightMin) nightMin = temps[i];
+        }
+        if(i>startIdx && h>8 && h<20) break;
+      }
+    }
+    if(nightMin===Infinity) nightMin = now;
+    return {now, nightMin};
+  }
+
+  // ---------- Animaciones ----------
+  function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+
+  function animateNumber(from,to,suffix){
+    const dur=1200, t0=performance.now();
+    function step(now){
+      const p=Math.min(1,(now-t0)/dur);
+      const ease=1-Math.pow(1-p,3);
+      const val=Math.round(from+(to-from)*ease);
+      tempVal.innerHTML = val+'<small>'+suffix+'</small>';
+      if(p<1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  // ---------- Test principal ----------
+  async function runTest(){
+    btn.disabled=true;
+    verdict.classList.remove('show'); meta.classList.remove('show');
+    steamBox.classList.remove('active');
+    document.body.classList.remove(...themes);
+    gaugeBox.classList.add('loading');
+    tempVal.innerHTML='<span class="spin">🍲</span>';
+    tempLabel.textContent='calculando…';
+
+    try{
+      status.textContent='📡 Buscando de dónde sos, bolu…';
+      const loc = await ipLocation();
+      await sleep(500);
+
+      status.textContent='🌡️ Mirando el clima de tu zona…';
+      const w = await getWeather(loc.lat, loc.lon);
+      await sleep(600);
+
+      status.textContent='🍲 Revolviendo la olla…';
+      await sleep(700);
+
+      gaugeBox.classList.remove('loading');
+
+      const decisive = w.nightMin;
+      const r = guisoScale(decisive);
+      const ing = Math.round(tempToIng(decisive));
+
+      // Animar gauge
+      setNeedle(ing);
+      animateNumber(0, ing, '%');
+      tempLabel.textContent='índice guisero';
+
+      // Datos
+      mNow.textContent = (w.now!=null? Math.round(w.now)+'°C' : '—');
+      mNight.textContent = Math.round(w.nightMin)+'°C';
+
+      // Veredicto
+      verdictBig.textContent = `${r.emoji} ${r.title}`;
+      verdictDesc.textContent = `"${r.desc}"`;
+      verdictSrc.textContent = r.src;
+      verdict.classList.remove('guiso','noguiso');
+      verdict.classList.add(ing>=60?'guiso':'noguiso','show');
+      meta.classList.add('show');
+
+      // Efectos visuales
+      setTheme(decisive);
+      spawnParticles(ing);
+      if(ing>=40) steamBox.classList.add('active');
+
+      status.textContent='Listo pa. Dale de nuevo si querés.';
+    }catch(err){
+      gaugeBox.classList.remove('loading');
+      tempVal.innerHTML='⚠️';
+      tempLabel.textContent='error';
+      status.textContent='No pude agarrar los datos, ¿tenés bloqueador de anuncios o se cortó el wifi? Metele de nuevo.';
+      console.error(err);
+    }finally{
+      btn.disabled=false;
+    }
+  }
+
+  btn.addEventListener('click', runTest);
+})();
+</script>
+</body>
+</html>
