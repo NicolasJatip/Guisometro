@@ -132,10 +132,17 @@
   /* Gauge */
   .gauge-box{position:relative;width:min(340px,80vw);margin:0 auto}
   svg{width:100%;height:auto;display:block;overflow:visible}
-  .needle{transform-box:fill-box;transform-origin:50% 100%;transition:transform 1.4s cubic-bezier(.34,1.56,.64,1)}
+  .needle{
+    transform-box:view-box;transform-origin:100px 110px;
+    transition:transform 1.4s cubic-bezier(.34,1.56,.64,1);
+    filter:drop-shadow(0 3px 5px rgba(0,0,0,.35));
+  }
+  .needle-pin{stroke:#fff3e6;stroke-width:5;stroke-linecap:round}
+  .needle-tip{fill:#fff3e6}
   .gauge-center{
     position:absolute;left:0;right:0;top:54%;
     display:flex;flex-direction:column;align-items:center;gap:2px;
+    pointer-events:none;
   }
   .temp-val{font-size:2.6rem;font-weight:800;line-height:1}
   .temp-val small{font-size:1.2rem;font-weight:600;opacity:.8}
@@ -184,6 +191,51 @@
   }
   .chip b{display:block;font-size:1.05rem;margin-top:3px;color:var(--text)}
 
+  /* Ranking guisero */
+  .ranking{
+    margin-top:18px;opacity:0;transform:translateY(8px);
+    transition:opacity .5s ease .28s, transform .5s ease .28s;
+    position:relative;z-index:1;text-align:left;
+    background:rgba(255,255,255,.04);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:14px;
+  }
+  .ranking.show{opacity:1;transform:none}
+  .ranking-head{
+    display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+    margin-bottom:12px;
+  }
+  .ranking-kicker{
+    display:block;color:var(--muted);font-size:.7rem;font-weight:800;
+    text-transform:uppercase;letter-spacing:1.6px;margin-bottom:4px;
+  }
+  .ranking-title{font-size:1.05rem;font-weight:800;line-height:1.15;color:var(--text)}
+  .ranking-badge{
+    flex:0 0 auto;border-radius:999px;padding:7px 10px;
+    background:linear-gradient(90deg,var(--accent2),var(--accent));
+    color:#2b1d12;font-size:.78rem;font-weight:900;
+    box-shadow:0 8px 20px rgba(255,140,59,.22);
+  }
+  .ranking-desc{color:var(--muted);font-size:.86rem;line-height:1.45;margin-bottom:12px}
+  .rank-list{display:grid;gap:7px}
+  .rank-item{
+    display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;
+    padding:8px 10px;border-radius:12px;
+    border:1px solid rgba(255,255,255,.08);
+    background:rgba(255,255,255,.03);
+    color:var(--muted);font-size:.78rem;
+  }
+  .rank-item.active{
+    color:var(--text);
+    border-color:rgba(255,210,63,.5);
+    background:linear-gradient(90deg,rgba(255,210,63,.14),rgba(255,140,59,.08));
+    box-shadow:0 0 22px rgba(255,210,63,.08);
+  }
+  .rank-mark{font-size:1rem}
+  .rank-name{font-weight:800;line-height:1.15}
+  .rank-range{font-size:.72rem;color:inherit;opacity:.72;white-space:nowrap}
+
   .gps-hint{
     margin-top:14px;opacity:0;transition:opacity .5s ease .4s;
     position:relative;z-index:1;
@@ -201,7 +253,7 @@
   footer a{color:var(--accent)}
 
   .loading svg .needle{animation:wiggle .35s linear infinite alternate}
-  @keyframes wiggle{from{transform:rotate(-12deg)}to{transform:rotate(12deg)}}
+  @keyframes wiggle{from{transform:rotate(-16deg)}to{transform:rotate(16deg)}}
   .spin{display:inline-block;animation:spin 1s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -236,7 +288,7 @@
         </span>
         <br>Guisómetro
       </h1>
-      <p class="sub">¿Está para hacer un guisito o no da? Dale, metele al botón y averiguá.</p>
+      <p class="sub">¿Está para hacer un guisito o no da?</p>
     </header>
 
     <div class="card">
@@ -261,11 +313,10 @@
           <text x="18" y="125" fill="#c9b79f" font-size="8" text-anchor="middle">-10°</text>
           <text x="100" y="20" fill="#c9b79f" font-size="8" text-anchor="middle">15°</text>
           <text x="182" y="125" fill="#c9b79f" font-size="8" text-anchor="middle">40°</text>
-          <!-- needle -->
+          <!-- floating needle -->
           <g class="needle" id="needle">
-            <path d="M100 110 L100 38" stroke="#fff3e6" stroke-width="4" stroke-linecap="round"/>
-            <circle cx="100" cy="110" r="9" fill="#fff3e6"/>
-            <circle cx="100" cy="110" r="4" fill="#2b1d12"/>
+            <path class="needle-pin" d="M100 38 L100 54"/>
+            <path class="needle-tip" d="M100 30 L108 43 Q100 50 92 43 Z"/>
           </g>
         </svg>
         <div class="gauge-center">
@@ -288,6 +339,18 @@
         <div class="chip">🌙 Mín. noche<b id="mNight">—</b></div>
       </div>
 
+      <div class="ranking" id="ranking">
+        <div class="ranking-head">
+          <div>
+            <span class="ranking-kicker">Ranking guisero</span>
+            <div class="ranking-title" id="rankingTitle"></div>
+          </div>
+          <div class="ranking-badge" id="rankingBadge"></div>
+        </div>
+        <div class="ranking-desc" id="rankingDesc"></div>
+        <div class="rank-list" id="rankList"></div>
+      </div>
+
       <div class="gps-hint" id="gpsHint">
         <a href="#" id="gpsLink">📍 ¿La temperatura no te cierra? Tocá acá</a>
       </div>
@@ -307,27 +370,13 @@
         meta=$('meta'), mNow=$('mNow'), mNight=$('mNight'),
         steamBox=$('steamBox'), bgParticles=$('bgParticles'),
         footerMeme=$('footerMeme'),
-        gpsHint=$('gpsHint'), gpsLink=$('gpsLink');
+        gpsHint=$('gpsHint'), gpsLink=$('gpsLink'),
+        ranking=$('ranking'), rankingTitle=$('rankingTitle'), rankingBadge=$('rankingBadge'),
+        rankingDesc=$('rankingDesc'), rankList=$('rankList');
 
   // ---------- Footer memero ----------
-  const footerMemes=[
-    '⚠️ Ningún guiso fue lastimado durante este test.',
-    '🧉 Powered by mate y frío.',
-    '📡 Conectando con el satélite guisero nacional...',
-    '🍲 if (frío) { guiso++ } else { parrilla++ }',
-    '🐄 No apto para veganos. Ni para gente que come ensalada en invierno.',
-    '🛸 Tecnología de un argento al servicio del guiso.',
-    '💾 Hecho con 1 solo HTML. Ni el INTA se animó a tanto.',
-    '🇦🇷 Este test tiene más ciencia que un meteorólogo de C5N.',
-    '🧅 A base de cebolla, papa y datos satelitales.',
-    '🔬 Peer-reviewed por mi vieja.',
-    '🍝 Los fideos moñito no se negocian.',
-    '⚡ Más rápido que tu vieja avisándote que te abrigues.',
-    '🧊 Error 404: calor not found.',
-    '🥄 console.log("a comer, bolu")',
-    '🌡️ El termómetro no miente. Tu vieja tampoco.',
-  ];
-  footerMeme.textContent = footerMemes[Math.floor(Math.random()*footerMemes.length)];
+  const footerText='🛸 Un Argento al servicio del guiso.';
+  footerMeme.textContent = footerText;
 
   // ---------- Fondo: partículas flotantes ----------
   function spawnParticles(ing){
@@ -389,6 +438,37 @@
     needle.style.transform = `rotate(${tempToAngle(t)}deg)`;
   }
 
+  // ---------- Ranking guisero ----------
+  const guisoRanks=[
+    {min:30, emoji:'🥵', title:'Tengo la boca seca', range:'+30°C', meaning:'Anti-guiso total. Abrí una ventana, agarrá algo frío y ni mires la olla.'},
+    {min:20, emoji:'☀️', title:'Pero dale...', range:'20–30°C', meaning:'Todavía está más para bife, soda o ensalada con dignidad dudosa.'},
+    {min:15, emoji:'🐑🍲', title:'Andás con frío', range:'15–20°C', meaning:'Aparece la primera excusa. No es obligación, pero la idea empieza a caminar.'},
+    {min:10, emoji:'👦🍲', title:'Y sí hijo', range:'10–15°C', meaning:'Zona guisera razonable. Ya podés defender la olla sin quedar exagerado.'},
+    {min:5, emoji:'❄️🍲', title:'Ha venido el fresco', range:'5–10°C', meaning:'El frío se hizo presente. Se recomienda cucharón, pan y repetir plato.'},
+    {min:0, emoji:'🍲🔥', title:'Alto Guiso', range:'0–5°C', meaning:'Nivel serio: no es antojo, es respuesta climática. Olla grande, fuego bajo y orgullo nacional.'},
+    {min:-Infinity, emoji:'🇦🇷🍲', title:'Guiso Nacional', range:'<0°C', meaning:'Emergencia guisera. La patria demanda plato hondo y segunda vuelta.'},
+  ];
+
+  function rankForTemp(t){
+    const index = guisoRanks.findIndex(r=>t>=r.min);
+    return {...guisoRanks[index], index};
+  }
+
+  function updateRanking(t){
+    const current = rankForTemp(t);
+    rankingTitle.textContent = `${current.emoji} ${current.title}`;
+    rankingBadge.textContent = `Nivel ${current.index+1}/7`;
+    rankingDesc.textContent = current.meaning;
+    rankList.innerHTML = guisoRanks.map((r,i)=>`
+      <div class="rank-item ${i===current.index?'active':''}">
+        <span class="rank-mark">${r.emoji}</span>
+        <span class="rank-name">${r.title}</span>
+        <span class="rank-range">${r.range}</span>
+      </div>
+    `).join('');
+    ranking.classList.add('show');
+  }
+
   // ---------- Escala guisera — frases de memes argentos ----------
   function guisoScale(t){
     if(t>=30) return {emoji:'🥵',    title:'Tengo la boca seca',
@@ -397,20 +477,20 @@
     if(t>=20) return {emoji:'☀️',    title:'Pero dale...',
       desc:'¡Un escopetazo en el pecho! Comete un bife de chorizo, pelotudo.',
       src:'— Mozos (Rodriguez Galati)'};
-    if(t>=15) return {emoji:'🍲',    title:'Y sí hijo',
+    if(t>=15) return {emoji:'🐑🍲', title:'Andás con frío',
+      desc:'¿Qué te has puesto una bufanda? ¿Andás con frío? Pero qué lindo te quedó.',
+      src:'— Oscar, andás con frío'};
+    if(t>=10) return {emoji:'👦🍲',    title:'Y sí hijo',
       desc:'¿Guiso de fideos moñito? ¡Y SÍ HIJO!',
       src:'— Johnny Primero de Mazo'};
-    if(t>=10) return {emoji:'🍲🔥', title:'Alto Guiso',
-      desc:'Con 15 pesos sale un paty. ¡Con 15 pesos me hago alto guiso!',
-      src:'— El pibe del guiso'};
     if(t>=5)  return {emoji:'❄️🍲', title:'Ha venido el fresco',
       desc:'La mierda che... ¡cómo se nota que ha venido el fresco eh! ¡Qué lo parió, qué friazazón!',
       src:'— Se congeló del frío'};
-    if(t>=0)  return {emoji:'🧣🍲', title:'Andás con frío',
-      desc:'¿Qué te has puesto una bufanda? ¿Andás con frío? Pero qué lindo te quedó.',
-      src:'— Oscar, andás con frío'};
-    return            {emoji:'☢️🍲', title:'Guiso Nacional',
-      desc:'Oíd mortales, el grito sagrado...',
+    if(t>=0)  return {emoji:'🍲🔥', title:'Alto Guiso',
+      desc:'Con 15 pesos sale un paty. ¡Con 15 pesos me hago alto guiso!',
+      src:'— El pibe del guiso'};
+    return            {emoji:'🇦🇷🍲', title:'Guiso Nacional',
+      desc:'Sean eternos los laureles que supimos conseguir.',
       src:'— Himno Nacional Argentino'};
   }
 
@@ -487,6 +567,7 @@
   async function runTest(){
     btn.disabled=true;
     verdict.classList.remove('show'); meta.classList.remove('show');
+    ranking.classList.remove('show');
     gpsHint.classList.remove('show','done');
     gpsLink.textContent='📍 ¿La temperatura no te cierra? Tocá acá';
     steamBox.classList.remove('active');
@@ -541,12 +622,13 @@
     verdictSrc.textContent = r.src;
     verdict.classList.remove('guiso','noguiso');
     verdict.classList.add(ing>=60?'guiso':'noguiso','show');
+    updateRanking(decisive);
 
     setTheme(decisive);
     spawnParticles(ing);
     if(ing>=40) steamBox.classList.add('active');
     else steamBox.classList.remove('active');
-    footerMeme.textContent = footerMemes[Math.floor(Math.random()*footerMemes.length)];
+    footerMeme.textContent = footerText;
   }
 
   async function requestGPS(e){
