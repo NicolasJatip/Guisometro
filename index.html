@@ -193,7 +193,12 @@
     background:var(--card);border:1px solid var(--border);
     border-radius:14px;padding:10px 14px;font-size:.85rem;min-width:90px;
   }
+  .chip-location{display:none;min-width:132px}
+  .chip-location.show{display:block}
   .chip b{display:block;font-size:1.05rem;margin-top:3px;color:var(--text)}
+  .chip-location b{
+    max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  }
 
   /* Ranking guisero */
   .ranking{
@@ -344,6 +349,7 @@
 
       <div class="meta" id="meta">
         <div class="chip">🌡️ Ahora<b id="mNow">—</b></div>
+        <div class="chip chip-location" id="locationChip">📍 Ubicación<b id="mLocation">—</b></div>
         <div class="chip">🌙 Mín. noche<b id="mNight">—</b></div>
       </div>
 
@@ -376,6 +382,7 @@
         tempVal=$('tempVal'), tempLabel=$('tempLabel'), gaugeBox=$('gaugeBox'),
         verdict=$('verdict'), verdictBig=$('verdictBig'), verdictDesc=$('verdictDesc'), verdictSrc=$('verdictSrc'),
         meta=$('meta'), mNow=$('mNow'), mNight=$('mNight'),
+        locationChip=$('locationChip'), mLocation=$('mLocation'),
         steamBox=$('steamBox'), bgParticles=$('bgParticles'),
         footerMeme=$('footerMeme'),
         gpsHint=$('gpsHint'), gpsLink=$('gpsLink'),
@@ -556,6 +563,29 @@
     return {now, nightMin};
   }
 
+  function showLocation(label){
+    mLocation.textContent = label || 'GPS preciso';
+    locationChip.classList.add('show');
+  }
+
+  function formatCoords(lat,lon){
+    return `${lat.toFixed(2)}, ${lon.toFixed(2)}`;
+  }
+
+  function placeFromReverseGeo(d){
+    const city = d.city || d.locality || d.principalSubdivision;
+    const area = d.principalSubdivision || d.countryName;
+    if(city && area && city!==area) return `${city}, ${area}`;
+    return city || area || '';
+  }
+
+  async function reverseLocation(lat,lon){
+    const url='https://api.bigdatacloud.net/data/reverse-geocode-client'
+      +`?latitude=${lat}&longitude=${lon}&localityLanguage=es`;
+    const d = await fetchJSON(url, 6000);
+    return placeFromReverseGeo(d);
+  }
+
   // ---------- Animaciones ----------
   function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 
@@ -576,6 +606,8 @@
     btn.disabled=true;
     verdict.classList.remove('show'); meta.classList.remove('show');
     ranking.classList.remove('show');
+    locationChip.classList.remove('show');
+    mLocation.textContent='—';
     gpsHint.classList.remove('show','done');
     gpsLink.textContent='📍 ¿La temperatura no te cierra? Tocá acá';
     steamBox.classList.remove('active');
@@ -653,8 +685,13 @@
       async(pos)=>{
         try{
           status.textContent='🛰️ Recalculando con GPS…';
-          const w = await getWeather(pos.coords.latitude, pos.coords.longitude);
+          const {latitude, longitude} = pos.coords;
+          const [w, place] = await Promise.all([
+            getWeather(latitude, longitude),
+            reverseLocation(latitude, longitude).catch(()=>formatCoords(latitude, longitude)),
+          ]);
           updateResults(w);
+          showLocation(place || formatCoords(latitude, longitude));
           gpsLink.textContent='📍 Ubicación actualizada ✓';
           gpsHint.classList.add('done');
           status.textContent='';
