@@ -225,6 +225,12 @@
     background:linear-gradient(90deg,var(--accent2),var(--accent));
     color:#2b1d12;font-size:.78rem;font-weight:900;
     box-shadow:0 8px 20px rgba(255,140,59,.22);
+    text-decoration:none;
+    transition:transform .18s ease, box-shadow .18s ease;
+  }
+  .ranking-badge:hover,.ranking-badge:focus-visible{
+    transform:translateY(-1px);
+    box-shadow:0 10px 24px rgba(255,140,59,.3);
   }
   .ranking-desc{color:var(--muted);font-size:.86rem;line-height:1.45;margin-bottom:12px}
   .rank-list{display:grid;gap:7px}
@@ -234,6 +240,14 @@
     border:1px solid rgba(255,255,255,.08);
     background:rgba(255,255,255,.03);
     color:var(--muted);font-size:.78rem;
+    text-decoration:none;
+    transition:transform .18s ease,border-color .18s ease,background .18s ease,color .18s ease;
+  }
+  .rank-item:hover,.rank-item:focus-visible{
+    transform:translateY(-1px);
+    color:var(--text);
+    border-color:rgba(255,210,63,.4);
+    background:rgba(255,255,255,.06);
   }
   .rank-item.active{
     color:var(--text);
@@ -359,7 +373,7 @@
             <span class="ranking-kicker">Ranking guisero</span>
             <div class="ranking-title" id="rankingTitle"></div>
           </div>
-          <div class="ranking-badge" id="rankingBadge"></div>
+          <a class="ranking-badge" id="rankingBadge" href="#" target="_blank" rel="noopener"></a>
         </div>
         <div class="ranking-desc" id="rankingDesc"></div>
         <div class="rank-list" id="rankList"></div>
@@ -455,13 +469,13 @@
 
   // ---------- Ranking guisero ----------
   const guisoRanks=[
-    {min:30, emoji:'🥵', title:'Tengo la boca seca', range:'+30°C', meaning:'Anti-guiso total. Abrí una ventana, agarrá algo frío y ni mires la olla.'},
-    {min:20, emoji:'☀️', title:'Pero dale...', range:'20–30°C', meaning:'Todavía está más para bife, soda o ensalada con dignidad dudosa.'},
-    {min:15, emoji:'🐑🍲', title:'Andás con frío', range:'15–20°C', meaning:'Aparece la primera excusa. No es obligación, pero la idea empieza a caminar.'},
-    {min:10, emoji:'👦🍲', title:'Y sí hijo', range:'10–15°C', meaning:'Zona guisera razonable. Ya podés defender la olla sin quedar exagerado.'},
-    {min:5, emoji:'❄️🍲', title:'Ha venido el fresco', range:'5–10°C', meaning:'El frío se hizo presente. Se recomienda cucharón, pan y repetir plato.'},
-    {min:0, emoji:'🍲🔥', title:'Alto Guiso', range:'0–5°C', meaning:'Nivel serio: no es antojo, es respuesta climática. Olla grande, fuego bajo y orgullo nacional.'},
-    {min:-Infinity, emoji:'🇦🇷🍲', title:'Guiso Nacional', range:'<0°C', meaning:'Emergencia guisera. La patria demanda plato hondo y segunda vuelta.'},
+    {min:30, emoji:'🥵', title:'Tengo la boca seca', range:'+30°C', href:'recetas/tengo-la-boca-seca.html', meaning:'Anti-guiso total. Abrí una ventana, agarrá algo frío y ni mires la olla.'},
+    {min:20, emoji:'☀️', title:'Pero dale...', range:'20–30°C', href:'recetas/pero-dale.html', meaning:'Todavía está más para bife, soda o ensalada con dignidad dudosa.'},
+    {min:15, emoji:'🐑🍲', title:'Andás con frío', range:'15–20°C', href:'recetas/andas-con-frio.html', meaning:'Aparece la primera excusa. No es obligación, pero la idea empieza a caminar.'},
+    {min:10, emoji:'👦🍲', title:'Y sí hijo', range:'10–15°C', href:'recetas/y-si-hijo.html', meaning:'Zona guisera razonable. Ya podés defender la olla sin quedar exagerado.'},
+    {min:5, emoji:'❄️🍲', title:'Ha venido el fresco', range:'5–10°C', href:'recetas/ha-venido-el-fresco.html', meaning:'El frío se hizo presente. Se recomienda cucharón, pan y repetir plato.'},
+    {min:0, emoji:'🍲🔥', title:'Alto Guiso', range:'0–5°C', href:'recetas/alto-guiso.html', meaning:'Nivel serio: no es antojo, es respuesta climática. Olla grande, fuego bajo y orgullo nacional.'},
+    {min:-Infinity, emoji:'🇦🇷🍲', title:'Guiso Nacional', range:'<0°C', href:'recetas/guiso-nacional.html', meaning:'Emergencia guisera. La patria demanda plato hondo y segunda vuelta.'},
   ];
 
   function rankForTemp(t){
@@ -473,13 +487,15 @@
     const current = rankForTemp(t);
     rankingTitle.textContent = `${current.emoji} ${current.title}`;
     rankingBadge.textContent = `Nivel ${current.index+1}/7`;
+    rankingBadge.href = current.href;
+    rankingBadge.setAttribute('aria-label', `Abrir receta: ${current.title}`);
     rankingDesc.textContent = current.meaning;
     rankList.innerHTML = guisoRanks.map((r,i)=>`
-      <div class="rank-item ${i===current.index?'active':''}">
+      <a class="rank-item ${i===current.index?'active':''}" href="${r.href}" target="_blank" rel="noopener" aria-label="Abrir receta: ${r.title}">
         <span class="rank-mark">${r.emoji}</span>
         <span class="rank-name">${r.title}</span>
         <span class="rank-range">${r.range}</span>
-      </div>
+      </a>
     `).join('');
     ranking.classList.add('show');
   }

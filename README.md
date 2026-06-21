@@ -13,7 +13,20 @@ Cuanto más frío, más ideal para tirar todo a la olla.
 - **Clima:** [Open-Meteo](https://open-meteo.com) (HTTPS, gratis, sin API key).
 - **UI:** un gauge/termómetro con aguja animada y el veredicto.
 
-Todo vive en un único `index.html`. No hay build ni dependencias.
+La app principal vive en `index.html`. Las recetas son páginas estáticas en `recetas/`
+y usan `styles.css` compartido. No hay build ni dependencias.
+
+## Recetas por ranking
+
+Después del test, cada nivel del ranking abre su receta en una pestaña nueva:
+
+- `+30°C` → `recetas/tengo-la-boca-seca.html`
+- `20–30°C` → `recetas/pero-dale.html`
+- `15–20°C` → `recetas/andas-con-frio.html`
+- `10–15°C` → `recetas/y-si-hijo.html`
+- `5–10°C` → `recetas/ha-venido-el-fresco.html`
+- `0–5°C` → `recetas/alto-guiso.html`
+- `<0°C` → `recetas/guiso-nacional.html`
 
 ## Probar localmente
 
