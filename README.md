@@ -14,7 +14,8 @@ Cuanto más frío, más ideal para tirar todo a la olla.
 - **UI:** un gauge/termómetro con aguja animada y el veredicto.
 
 La app principal vive en `index.html`. Las recetas son páginas estáticas en `recetas/`
-y usan `styles.css` compartido. No hay build ni dependencias.
+y usan `styles.css` compartido. Las referencias visuales de memes viven en
+`assets/memes/`. No hay build ni dependencias.
 
 ## Recetas por ranking
 
@@ -27,6 +28,8 @@ Después del test, cada nivel del ranking abre su receta en una pestaña nueva:
 - `5–10°C` → `recetas/ha-venido-el-fresco.html`
 - `0–5°C` → `recetas/alto-guiso.html`
 - `<0°C` → `recetas/guiso-nacional.html`
+
+Cada receta incluye una imagen/referencia directa al meme del nivel. Las fuentes están documentadas en `assets/memes/SOURCES.md`.
 
 ## Probar localmente
 

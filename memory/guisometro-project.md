@@ -4,7 +4,7 @@
 
 Web 100% frontend y estática (sin backend, sin build, sin dependencias) que detecta el clima de tu zona y te dice si esta noche es **Noche de Guiso**.
 
-La app principal vive en `index.html`. Las recetas viven como HTML estático en `recetas/` y comparten `styles.css`.
+La app principal vive en `index.html`. Las recetas viven como HTML estático en `recetas/`, comparten `styles.css` y usan referencias visuales locales desde `assets/memes/`.
 
 La regla: si la **mínima pronosticada de la noche** (ventana 20:00–08:00) es **≤ 10 °C**, es noche de guiso. Cuanto más frío, más ideal.
 
@@ -105,6 +105,7 @@ Los bloqueadores de anuncios tienen a `ipapi.co` e `ipwho.is` en sus listas de b
 - **Partículas flotantes**: cantidad proporcional al ING, color cálido (guiso) o frío
 - **Ranking guisero**: lista de 7 niveles con el nivel actual resaltado
 - **Recetas estáticas**: una página por nivel del ranking, con estética hermana del sitio
+- **Referencias memeras visuales**: cada receta reemplaza el bloque emoji por una imagen/placa local del meme; las fuentes están en `assets/memes/SOURCES.md`
 - **Footer fijo**: `🛸 Un Argento al servicio del guiso.`
 - **Favicon**: emoji 🍲 embebido como SVG data URL
 
@@ -139,6 +140,20 @@ Decisiones de integración:
 - El ranking de `index.html` ahora renderiza enlaces reales.
 - El badge `Nivel X/7` también abre la receta del resultado actual.
 - Las recetas incluyen favicon y [[cloudflare-web-analytics]].
+
+## Referencias visuales de memes — 2026-06-21
+
+Se agregó `assets/memes/` para que cada receta tenga una referencia visual directa al meme que nombra el nivel.
+
+Decisiones:
+
+- Se mantiene el sitio 100% estático y sin hotlinking.
+- Las recetas usan `<figure class="meme-ref">` con imagen local, `alt` descriptivo y caption corto.
+- Se reemplazó `.recipe-mark` por `.meme-ref` en las 7 recetas.
+- `styles.css` define tamaño estable, `aspect-ratio: 16 / 10`, `object-fit: cover`, borde suave y comportamiento mobile.
+- `[[tengo-la-boca-seca]]` y `[[guiso-nacional]]` usan placas SVG propias.
+- Los demás niveles usan thumbnails o imágenes locales descargadas desde referencias públicas del meme.
+- Las fuentes y criterios quedaron documentados en `assets/memes/SOURCES.md`.
 
 ## Cierre de sesión — 2026-06-21
 

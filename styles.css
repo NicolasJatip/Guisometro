@@ -268,15 +268,31 @@ footer {
   align-items: start;
 }
 
-.recipe-mark {
-  width: 108px;
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
+.meme-ref {
+  width: clamp(150px, 22vw, 180px);
+  margin: 0;
   border: 1px solid var(--line);
   border-radius: 14px;
+  overflow: hidden;
   background: rgba(255, 255, 255, 0.07);
-  font-size: 50px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
+}
+
+.meme-ref img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  display: block;
+  object-fit: cover;
+}
+
+.meme-ref figcaption {
+  padding: 8px 9px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .recipe-meta {
@@ -354,6 +370,11 @@ ol {
   .recipe-header {
     grid-template-columns: 1fr;
     display: grid;
+  }
+
+  .meme-ref {
+    width: 100%;
+    max-width: 360px;
   }
 
   .level-pill {
