@@ -161,6 +161,7 @@ Cambios aplicados y publicados en [[github-pages]]:
 - Se agregó [[cloudflare-web-analytics]] con token público en el HTML para medir visitas.
 - Se alineó el footer con la columna visual principal.
 - Se agregó chip de ubicación para GPS preciso cuando el usuario acepta permisos del navegador.
+- Se incorporaron recetas estáticas por cada nivel del [[ranking-guisero]] y se publicaron en [[github-pages]].
 
 Commits relevantes:
 
@@ -169,3 +170,4 @@ Commits relevantes:
 - `10aee27` — Agrega Cloudflare Web Analytics
 - `3cc631f` — Alinea footer con contenido
 - `59909e0` — Muestra ubicacion GPS en resultados
+- `cac03f1` — Agrega recetas por ranking
