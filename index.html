@@ -261,7 +261,7 @@
         </div>
       </div>
 
-      <button class="btn" id="testBtn">🔥 Dale, metele</button>
+      <button class="btn" id="testBtn">🔥 Hacer el Test</button>
       <div class="status" id="status">Apretá el botón, bolu.</div>
 
       <div class="verdict" id="verdict">
@@ -277,11 +277,7 @@
     </div>
 
     <footer>
-      Se fija la mínima pronosticada de esta noche (20:00–08:00).
-      Si baja de <b>10&nbsp;°C</b> → 🍲 ¡Noche de Guiso! ·
-      Clima: <a href="https://open-meteo.com" target="_blank" rel="noopener">Open-Meteo</a> ·
-      Ubicación aprox. por IP ·
-      Hecho con 🧉 en Argentina.
+      <span id="footerMeme"></span>
     </footer>
   </div>
 
@@ -292,7 +288,28 @@
         tempVal=$('tempVal'), tempLabel=$('tempLabel'), gaugeBox=$('gaugeBox'),
         verdict=$('verdict'), verdictBig=$('verdictBig'), verdictDesc=$('verdictDesc'), verdictSrc=$('verdictSrc'),
         meta=$('meta'), mNow=$('mNow'), mNight=$('mNight'),
-        steamBox=$('steamBox'), bgParticles=$('bgParticles');
+        steamBox=$('steamBox'), bgParticles=$('bgParticles'),
+        footerMeme=$('footerMeme');
+
+  // ---------- Footer memero ----------
+  const footerMemes=[
+    '⚠️ Ningún guiso fue lastimado durante este test.',
+    '🧉 Powered by mate y frío.',
+    '📡 Conectando con el satélite guisero nacional...',
+    '🍲 if (frío) { guiso++ } else { parrilla++ }',
+    '🐄 No apto para veganos. Ni para gente que come ensalada en invierno.',
+    '🛸 Tecnología del CONICET al servicio del guiso.',
+    '💾 Hecho con 1 solo HTML. Ni el INTA se animó a tanto.',
+    '🇦🇷 Este test tiene más ciencia que un meteorólogo de C5N.',
+    '🧅 A base de cebolla, papa y datos satelitales.',
+    '🔬 Peer-reviewed por mi vieja.',
+    '🍝 Los fideos moñito no se negocian.',
+    '⚡ Más rápido que tu vieja avisándote que te abrigues.',
+    '🧊 Error 404: calor not found.',
+    '🥄 console.log("a comer, bolu")',
+    '🌡️ El termómetro no miente. Tu vieja tampoco.',
+  ];
+  footerMeme.textContent = footerMemes[Math.floor(Math.random()*footerMemes.length)];
 
   // ---------- Fondo: partículas flotantes ----------
   function spawnParticles(ing){
@@ -457,15 +474,15 @@
     tempLabel.textContent='calculando…';
 
     try{
-      status.textContent='📡 Buscando de dónde sos, bolu…';
+      status.textContent='📡 Rastreando tu IP como la AFIP…';
       const loc = await ipLocation();
       await sleep(500);
 
-      status.textContent='🌡️ Mirando el clima de tu zona…';
+      status.textContent='🛰️ Consultando el satélite guisero…';
       const w = await getWeather(loc.lat, loc.lon);
       await sleep(600);
 
-      status.textContent='🍲 Revolviendo la olla…';
+      status.textContent='🧅 Picando cebolla y procesando datos…';
       await sleep(700);
 
       gaugeBox.classList.remove('loading');
@@ -497,6 +514,7 @@
       if(ing>=40) steamBox.classList.add('active');
 
       status.textContent='Listo pa. Dale de nuevo si querés.';
+      footerMeme.textContent = footerMemes[Math.floor(Math.random()*footerMemes.length)];
     }catch(err){
       gaugeBox.classList.remove('loading');
       tempVal.innerHTML='⚠️';
