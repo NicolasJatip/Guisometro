@@ -151,7 +151,7 @@ Decisiones:
 - Las recetas usan `<figure class="meme-ref">` con imagen local, `alt` descriptivo y caption corto.
 - Se reemplazó `.recipe-mark` por `.meme-ref` en las 7 recetas.
 - `styles.css` define tamaño estable, `aspect-ratio: 16 / 10`, `object-fit: cover`, borde suave y comportamiento mobile.
-- `[[guiso-nacional]]` usa una placa SVG propia.
+- `[[guiso-nacional]]` usa una placa SVG propia con bandera argentina y sol grande.
 - `[[tengo-la-boca-seca]]` usa thumbnail local de la escena de Francella en *El Secreto de sus Ojos*.
 - `[[alto-guiso]]` usa thumbnail local del video original del meme "Alto Guiso".
 - Los demás niveles usan thumbnails o imágenes locales descargadas desde referencias públicas del meme.

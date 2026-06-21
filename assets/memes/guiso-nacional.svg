@@ -1,21 +1,44 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-label="Guiso Nacional">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 600" role="img" aria-label="Bandera argentina con sol para Guiso Nacional">
   <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#4da3dc"/>
-      <stop offset="1" stop-color="#f5f5f5"/>
+    <radialGradient id="sunGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0" stop-color="#fff4a8"/>
+      <stop offset=".45" stop-color="#ffd23f"/>
+      <stop offset="1" stop-color="#f0a018"/>
+    </radialGradient>
+    <linearGradient id="shade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".24"/>
+      <stop offset=".55" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity=".24"/>
     </linearGradient>
-    <linearGradient id="shine" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#ffd23f" stop-opacity=".24"/>
-      <stop offset="1" stop-color="#fff3e6" stop-opacity=".06"/>
-    </linearGradient>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#1a1410" flood-opacity=".34"/>
+    </filter>
   </defs>
-  <rect width="960" height="600" fill="url(#bg)"/>
-  <rect width="960" height="600" fill="#000" opacity=".34"/>
-  <path d="M0 520 C160 430 260 530 410 430 S730 280 960 380 L960 600 L0 600 Z" fill="url(#shine)"/>
-  <rect x="56" y="58" width="848" height="484" rx="28" fill="#fff" opacity=".08"/>
-  <rect x="56" y="58" width="848" height="484" rx="28" fill="none" stroke="#fff" opacity=".22" stroke-width="3"/>
-  <text x="82" y="190" font-family="Segoe UI Emoji, Apple Color Emoji, sans-serif" font-size="96">??????</text>
-  <text x="82" y="300" font-family="Segoe UI, Arial, sans-serif" font-weight="800" font-size="58" fill="#fff3e6">Guiso Nacional</text>
-  <text x="86" y="372" font-family="Segoe UI, Arial, sans-serif" font-weight="700" font-size="32" fill="#c9b79f">Sean eternos los laureles</text>
-  <text x="86" y="462" font-family="Segoe UI, Arial, sans-serif" font-weight="800" font-size="22" fill="#ffd23f">Referencia memera</text>
+
+  <rect width="960" height="200" fill="#79c8f2"/>
+  <rect y="200" width="960" height="200" fill="#fff7ec"/>
+  <rect y="400" width="960" height="200" fill="#79c8f2"/>
+  <rect width="960" height="600" fill="url(#shade)"/>
+
+  <g filter="url(#softShadow)">
+    <circle cx="480" cy="300" r="130" fill="url(#sunGlow)"/>
+    <g fill="#f0a018">
+      <path d="M480 100l24 112h-48z"/>
+      <path d="M480 500l-24-112h48z"/>
+      <path d="M280 300l112-24v48z"/>
+      <path d="M680 300l-112 24v-48z"/>
+      <path d="M339 159l96 63-34 34z"/>
+      <path d="M621 441l-96-63 34-34z"/>
+      <path d="M339 441l63-96 34 34z"/>
+      <path d="M621 159l-63 96-34-34z"/>
+    </g>
+    <circle cx="480" cy="300" r="86" fill="#ffd23f" stroke="#a96912" stroke-width="8"/>
+    <circle cx="448" cy="282" r="10" fill="#7a4b10"/>
+    <circle cx="512" cy="282" r="10" fill="#7a4b10"/>
+    <path d="M448 330c22 20 42 20 64 0" fill="none" stroke="#7a4b10" stroke-width="9" stroke-linecap="round"/>
+    <path d="M480 292c-8 20-8 32 4 44" fill="none" stroke="#a96912" stroke-width="7" stroke-linecap="round"/>
+  </g>
+
+  <rect x="42" y="42" width="876" height="516" rx="28" fill="none" stroke="#fff3e6" stroke-opacity=".34" stroke-width="3"/>
+  <text x="480" y="526" text-anchor="middle" font-family="Segoe UI, Arial, sans-serif" font-size="40" font-weight="900" fill="#2b1d12">Guiso Nacional</text>
 </svg>
