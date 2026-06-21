@@ -151,9 +151,16 @@ Decisiones:
 - Las recetas usan `<figure class="meme-ref">` con imagen local, `alt` descriptivo y caption corto.
 - Se reemplazó `.recipe-mark` por `.meme-ref` en las 7 recetas.
 - `styles.css` define tamaño estable, `aspect-ratio: 16 / 10`, `object-fit: cover`, borde suave y comportamiento mobile.
-- `[[tengo-la-boca-seca]]` y `[[guiso-nacional]]` usan placas SVG propias.
+- `[[guiso-nacional]]` usa una placa SVG propia.
+- `[[tengo-la-boca-seca]]` usa thumbnail local de la escena de Francella en *El Secreto de sus Ojos*.
+- `[[alto-guiso]]` usa thumbnail local del video original del meme "Alto Guiso".
 - Los demás niveles usan thumbnails o imágenes locales descargadas desde referencias públicas del meme.
 - Las fuentes y criterios quedaron documentados en `assets/memes/SOURCES.md`.
+
+Corrección posterior:
+
+- Se reemplazó el asset incorrecto de `[[alto-guiso]]` por el video original indicado por el usuario: `https://www.youtube.com/watch?v=Saa86WoG1ng`.
+- Se reemplazó la placa propia de `[[tengo-la-boca-seca]]` por el thumbnail de la escena de Francella indicada por el usuario: `https://www.youtube.com/watch?v=82Y-MfaOTqs&t=8s`.
 
 ## Cierre de sesión — 2026-06-21
 
