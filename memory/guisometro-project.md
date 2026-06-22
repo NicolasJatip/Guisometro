@@ -32,14 +32,13 @@ La regla: si la **mínima pronosticada de la noche** (ventana 20:00–08:00) es 
 
 > Se usan 3 proveedores de IP en cascada porque los bloqueadores de anuncios (uBlock, EasyPrivacy) bloquean frecuentemente estos servicios. Cada petición tiene un **timeout de 8 segundos** via `AbortController`.
 
-### Escala guisera — 7 franjas
+### Escala guisera — 6 franjas
 
 Las frases están tomadas de memes argentos reales. Cada una tiene su fuente.
 
 | Temperatura | Nivel | Frase | Fuente |
 |---|---|---|---|
-| +30°C | 🥵 Tengo la boca seca | "Tengo la boca seca... ¿no tenés algo para tomar?" | El Secreto de sus Ojos |
-| 20–30°C | ☀️ Pero dale... | "¡Un escopetazo en el pecho! Comete un bife de chorizo, pelotudo." | Mozos (Rodriguez Galati) |
+| +20°C | 🥵 Tengo la boca seca | "Tengo la boca seca... ¿no tenés algo para tomar?" | El Secreto de sus Ojos |
 | 15–20°C | 🐑🍲 Andás con frío | "¿Qué te has puesto una bufanda? ¿Andás con frío? Pero qué lindo te quedó." | Oscar, andás con frío |
 | 10–15°C | 👦🍲 Y sí hijo | "¿Guiso de fideos moñito? ¡Y SÍ HIJO!" | Johnny Primero de Mazo |
 | 5–10°C | ❄️🍲 Ha venido el fresco | "La mierda che... ¡cómo se nota que ha venido el fresco eh!" | Se congeló del frío |
@@ -52,8 +51,7 @@ Cada nivel del [[ranking-guisero]] tiene una receta estática propia y se abre c
 
 | Temperatura | Nivel | Receta |
 |---|---|---|
-| +30°C | [[tengo-la-boca-seca]] | `recetas/tengo-la-boca-seca.html` |
-| 20–30°C | [[pero-dale]] | `recetas/pero-dale.html` |
+| +20°C | [[tengo-la-boca-seca]] | `recetas/tengo-la-boca-seca.html` |
 | 15–20°C | [[andas-con-frio]] | `recetas/andas-con-frio.html` |
 | 10–15°C | [[y-si-hijo]] | `recetas/y-si-hijo.html` |
 | 5–10°C | [[ha-venido-el-fresco]] | `recetas/ha-venido-el-fresco.html` |
@@ -103,7 +101,7 @@ Los bloqueadores de anuncios tienen a `ipapi.co` e `ipwho.is` en sus listas de b
 - **Humito animado**: 6 puffs CSS sobre la olla, se activa cuando ING ≥ 40
 - **Fondo dinámico**: glow radial que cambia de color según la franja de temperatura
 - **Partículas flotantes**: cantidad proporcional al ING, color cálido (guiso) o frío
-- **Ranking guisero**: lista de 7 niveles con el nivel actual resaltado
+- **Ranking guisero**: lista de 6 niveles con el nivel actual resaltado
 - **Recetas estáticas**: una página por nivel del ranking, con estética hermana del sitio
 - **Referencias memeras visuales**: cada receta reemplaza el bloque emoji por una imagen/placa local del meme; las fuentes están en `assets/memes/SOURCES.md`
 - **Footer fijo**: `🛸 Un Argento al servicio del guiso.`
@@ -134,11 +132,11 @@ Se incorporó el prototipo externo ubicado en:
 Decisiones de integración:
 
 - No se reemplazó la app principal por el prototipo.
-- Se trajeron las 7 páginas de receta a `recetas/`.
+- Se trajeron las 6 páginas de receta a `recetas/`.
 - Se agregó `styles.css` para las páginas de receta, ajustado a la identidad visual actual.
 - Se mantuvo todo estático.
 - El ranking de `index.html` ahora renderiza enlaces reales.
-- El badge `Nivel X/7` también abre la receta del resultado actual.
+- El badge `Nivel X/6` también abre la receta del resultado actual.
 - Las recetas incluyen favicon y [[cloudflare-web-analytics]].
 
 ## Referencias visuales de memes — 2026-06-21
@@ -149,9 +147,9 @@ Decisiones:
 
 - Se mantiene el sitio 100% estático y sin hotlinking.
 - Las recetas usan `<figure class="meme-ref">` con imagen local, `alt` descriptivo y caption corto.
-- Se reemplazó `.recipe-mark` por `.meme-ref` en las 7 recetas.
+- Se reemplazó `.recipe-mark` por `.meme-ref` en las 6 recetas activas.
 - `styles.css` define tamaño estable, `aspect-ratio: 16 / 10`, `object-fit: cover`, borde suave y comportamiento mobile.
-- `[[guiso-nacional]]` usa una placa SVG propia con bandera argentina y sol grande.
+- `[[guiso-nacional]]` usa una imagen PNG local provista por el usuario, con bandera argentina y sol grande.
 - `[[tengo-la-boca-seca]]` usa thumbnail local de la escena de Francella en *El Secreto de sus Ojos*.
 - `[[alto-guiso]]` usa thumbnail local del video original del meme "Alto Guiso".
 - Los demás niveles usan thumbnails o imágenes locales descargadas desde referencias públicas del meme.
@@ -161,6 +159,18 @@ Corrección posterior:
 
 - Se reemplazó el asset incorrecto de `[[alto-guiso]]` por el video original indicado por el usuario: `https://www.youtube.com/watch?v=Saa86WoG1ng`.
 - Se reemplazó la placa propia de `[[tengo-la-boca-seca]]` por el thumbnail de la escena de Francella indicada por el usuario: `https://www.youtube.com/watch?v=82Y-MfaOTqs&t=8s`.
+
+## Ajuste de recetas y escala — 2026-06-21
+
+Cambios aplicados antes del cierre:
+
+- Se eliminó el nivel `[[pero-dale]]` del [[ranking-guisero]].
+- La escala quedó en 6 niveles: `+20°C`, `15–20°C`, `10–15°C`, `5–10°C`, `0–5°C`, `<0°C`.
+- `[[tengo-la-boca-seca]]` ahora cubre todo el rango `+20°C` y su receta pasó a ser un asado argentino con picada, birra fría y vino.
+- Se eliminaron `recetas/pero-dale.html` y `assets/memes/pero-dale.jpg`.
+- Se renumeraron las recetas activas como `Nivel 1/6` a `Nivel 6/6`.
+- `[[guiso-nacional]]` usa la imagen PNG local provista por el usuario: bandera argentina con sol sobre tela.
+- `README.md` ahora enlaza a esta memoria como fuente ampliada de decisiones del proyecto.
 
 ## Cierre de sesión — 2026-06-21
 
@@ -173,8 +183,7 @@ Cambios aplicados y publicados en [[github-pages]]:
   - `5–10°C` → ❄️🍲 **Ha venido el fresco**
   - `10–15°C` → 👦🍲 **Y sí hijo**
   - `15–20°C` → 🐑🍲 **Andás con frío**
-  - `20–30°C` → ☀️ **Pero dale...**
-  - `+30°C` → 🥵 **Tengo la boca seca**
+  - `+20°C` → 🥵 **Tengo la boca seca**
 - Se agregó una UI de [[ranking-guisero]] con nivel actual, descripción y lista de rangos.
 - Se dejó fijo el footer: `🛸 Un Argento al servicio del guiso.`
 - Se agregó favicon de guiso 🍲.

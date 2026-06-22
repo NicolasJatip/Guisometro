@@ -21,8 +21,7 @@ y usan `styles.css` compartido. Las referencias visuales de memes viven en
 
 Después del test, cada nivel del ranking abre su receta en una pestaña nueva:
 
-- `+30°C` → `recetas/tengo-la-boca-seca.html`
-- `20–30°C` → `recetas/pero-dale.html`
+- `+20°C` → `recetas/tengo-la-boca-seca.html`
 - `15–20°C` → `recetas/andas-con-frio.html`
 - `10–15°C` → `recetas/y-si-hijo.html`
 - `5–10°C` → `recetas/ha-venido-el-fresco.html`
@@ -30,6 +29,10 @@ Después del test, cada nivel del ranking abre su receta en una pestaña nueva:
 - `<0°C` → `recetas/guiso-nacional.html`
 
 Cada receta incluye una imagen/referencia directa al meme del nivel. Las fuentes están documentadas en `assets/memes/SOURCES.md`.
+
+## Más detalles del proyecto
+
+La memoria larga del proyecto está en `memory/guisometro-project.md`. Ahí quedan las decisiones de diseño, hosting, analytics, ranking, recetas y referencias visuales con formato compatible con Obsidian.
 
 ## Probar localmente
 

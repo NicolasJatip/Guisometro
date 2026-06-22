@@ -469,8 +469,7 @@
 
   // ---------- Ranking guisero ----------
   const guisoRanks=[
-    {min:30, emoji:'🥵', title:'Tengo la boca seca', range:'+30°C', href:'recetas/tengo-la-boca-seca.html', meaning:'Anti-guiso total. Abrí una ventana, agarrá algo frío y ni mires la olla.'},
-    {min:20, emoji:'☀️', title:'Pero dale...', range:'20–30°C', href:'recetas/pero-dale.html', meaning:'Todavía está más para bife, soda o ensalada con dignidad dudosa.'},
+    {min:20, emoji:'🥵', title:'Tengo la boca seca', range:'+20°C', href:'recetas/tengo-la-boca-seca.html', meaning:'Calor fuerte, humo noble y sed nacional. No es noche de guiso: es territorio de parrilla.'},
     {min:15, emoji:'🐑🍲', title:'Andás con frío', range:'15–20°C', href:'recetas/andas-con-frio.html', meaning:'Aparece la primera excusa. No es obligación, pero la idea empieza a caminar.'},
     {min:10, emoji:'👦🍲', title:'Y sí hijo', range:'10–15°C', href:'recetas/y-si-hijo.html', meaning:'Zona guisera razonable. Ya podés defender la olla sin quedar exagerado.'},
     {min:5, emoji:'❄️🍲', title:'Ha venido el fresco', range:'5–10°C', href:'recetas/ha-venido-el-fresco.html', meaning:'El frío se hizo presente. Se recomienda cucharón, pan y repetir plato.'},
@@ -486,7 +485,7 @@
   function updateRanking(t){
     const current = rankForTemp(t);
     rankingTitle.textContent = `${current.emoji} ${current.title}`;
-    rankingBadge.textContent = `Nivel ${current.index+1}/7`;
+    rankingBadge.textContent = `Nivel ${current.index+1}/${guisoRanks.length}`;
     rankingBadge.href = current.href;
     rankingBadge.setAttribute('aria-label', `Abrir receta: ${current.title}`);
     rankingDesc.textContent = current.meaning;
@@ -502,12 +501,9 @@
 
   // ---------- Escala guisera — frases de memes argentos ----------
   function guisoScale(t){
-    if(t>=30) return {emoji:'🥵',    title:'Tengo la boca seca',
+    if(t>=20) return {emoji:'🥵',    title:'Tengo la boca seca',
       desc:'Tengo la boca seca... ¿no tenés algo para tomar?',
       src:'— El Secreto de sus Ojos'};
-    if(t>=20) return {emoji:'☀️',    title:'Pero dale...',
-      desc:'¡Un escopetazo en el pecho! Comete un bife de chorizo, pelotudo.',
-      src:'— Mozos (Rodriguez Galati)'};
     if(t>=15) return {emoji:'🐑🍲', title:'Andás con frío',
       desc:'¿Qué te has puesto una bufanda? ¿Andás con frío? Pero qué lindo te quedó.',
       src:'— Oscar, andás con frío'};
