@@ -3,7 +3,7 @@
 Web 100% frontend (sin backend) que detecta tu ubicación por IP, mira el clima de tu zona
 y te dice si esta noche es **Noche de Guiso**.
 
-👉 La regla: si la **mínima pronosticada de la noche** (20:00–08:00) es **≤ 10 °C**, es noche de guiso.
+👉 La regla: si la **mínima pronosticada de la noche** (20:00–08:00) es **≤ 12 °C**, es noche de guiso.
 Cuanto más frío, más ideal para tirar todo a la olla.
 
 ## Cómo funciona
@@ -21,12 +21,12 @@ y usan `styles.css` compartido. Las referencias visuales de memes viven en
 
 Después del test, cada nivel del ranking abre su receta en una pestaña nueva:
 
-- `+20°C` → `recetas/tengo-la-boca-seca.html`
-- `15–20°C` → `recetas/andas-con-frio.html`
-- `10–15°C` → `recetas/y-si-hijo.html`
-- `5–10°C` → `recetas/ha-venido-el-fresco.html`
-- `0–5°C` → `recetas/alto-guiso.html`
-- `<0°C` → `recetas/guiso-nacional.html`
+- `<3°C` → `recetas/guiso-nacional.html`
+- `3–6°C` → `recetas/y-si-hijo.html`
+- `6–9°C` → `recetas/alto-guiso.html`
+- `9–12°C` → `recetas/andas-con-frio.html`
+- `12–18°C` → `recetas/ha-venido-el-fresco.html`
+- `+18°C` → `recetas/tengo-la-boca-seca.html`
 
 Cada receta incluye una imagen/referencia directa al meme del nivel. Las fuentes están documentadas en `assets/memes/SOURCES.md`.
 

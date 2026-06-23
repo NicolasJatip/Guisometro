@@ -6,7 +6,7 @@ Web 100% frontend y estática (sin backend, sin build, sin dependencias) que det
 
 La app principal vive en `index.html`. Las recetas viven como HTML estático en `recetas/`, comparten `styles.css` y usan referencias visuales locales desde `assets/memes/`.
 
-La regla: si la **mínima pronosticada de la noche** (ventana 20:00–08:00) es **≤ 10 °C**, es noche de guiso. Cuanto más frío, más ideal.
+La regla: si la **mínima pronosticada de la noche** (ventana 20:00–08:00) es **≤ 12 °C**, es noche de guiso. Cuanto más frío, más ideal.
 
 ## Cómo funciona
 
@@ -38,12 +38,12 @@ Las frases están tomadas de memes argentos reales. Cada una tiene su fuente.
 
 | Temperatura | Nivel | Frase | Fuente |
 |---|---|---|---|
-| +20°C | 🥵 Tengo la boca seca | "Tengo la boca seca... ¿no tenés algo para tomar?" | El Secreto de sus Ojos |
-| 15–20°C | 🐑🍲 Andás con frío | "¿Qué te has puesto una bufanda? ¿Andás con frío? Pero qué lindo te quedó." | Oscar, andás con frío |
-| 10–15°C | 👦🍲 Y sí hijo | "¿Guiso de fideos moñito? ¡Y SÍ HIJO!" | Johnny Primero de Mazo |
-| 5–10°C | ❄️🍲 Ha venido el fresco | "La mierda che... ¡cómo se nota que ha venido el fresco eh!" | Se congeló del frío |
-| 0–5°C | 🍲🔥 Alto Guiso | "Con 15 pesos sale un paty. ¡Con 15 pesos me hago alto guiso!" | El pibe del guiso |
-| <0°C | 🇦🇷🍲 Guiso Nacional | "Sean eternos los laureles que supimos conseguir." | Himno Nacional Argentino |
+| <3°C | 🇦🇷🍲 Guiso Nacional | "Sean eternos los laureles que supimos conseguir." | Himno Nacional Argentino |
+| 3–6°C | 👦🍲 ¡Un guiso de fideos moñito! Y sí, hijo! | "Un guiso de fideos moñito! Y sí, hijo!" | Johnny Primero de Mazo |
+| 6–9°C | 🍲🔥 Alto Guiso | "Con 15 pesos sale un paty. ¡Con 15 pesos me hago alto guiso!" | El pibe del guiso |
+| 9–12°C | 🐑🍲 ¡Oscar! ¿Qué te has puesto, una bufanda? | "Oscar! ¿Qué te has puesto, una bufanda?" | Oscar, andás con frío |
+| 12–18°C | ❄️🍲 ¡Laaa mierda! Cómo se nota que ha venido el fresco, eh! | "Laaa mierda! Cómo se nota que ha venido el fresco, eh!" | Se congeló del frío |
+| +18°C | 🥵 Tengo la boca seca | "Tengo la boca seca... ¿no tenés algo para tomar?" | El Secreto de sus Ojos |
 
 ### Recetas por ranking
 
@@ -51,19 +51,19 @@ Cada nivel del [[ranking-guisero]] tiene una receta estática propia y se abre c
 
 | Temperatura | Nivel | Receta |
 |---|---|---|
-| +20°C | [[tengo-la-boca-seca]] | `recetas/tengo-la-boca-seca.html` |
-| 15–20°C | [[andas-con-frio]] | `recetas/andas-con-frio.html` |
-| 10–15°C | [[y-si-hijo]] | `recetas/y-si-hijo.html` |
-| 5–10°C | [[ha-venido-el-fresco]] | `recetas/ha-venido-el-fresco.html` |
-| 0–5°C | [[alto-guiso]] | `recetas/alto-guiso.html` |
-| <0°C | [[guiso-nacional]] | `recetas/guiso-nacional.html` |
+| <3°C | [[guiso-nacional]] | `recetas/guiso-nacional.html` |
+| 3–6°C | [[y-si-hijo]] | `recetas/y-si-hijo.html` |
+| 6–9°C | [[alto-guiso]] | `recetas/alto-guiso.html` |
+| 9–12°C | [[andas-con-frio]] | `recetas/andas-con-frio.html` |
+| 12–18°C | [[ha-venido-el-fresco]] | `recetas/ha-venido-el-fresco.html` |
+| +18°C | [[tengo-la-boca-seca]] | `recetas/tengo-la-boca-seca.html` |
 
 ### ING (Índice Guisero Nacional)
 
 Mapeo no lineal de temperatura a un índice 0–100 que se usa internamente para decidir efectos visuales (partículas, humito, glow). No se muestra al usuario, pero controla la intensidad de los efectos.
 
 ```
-Temp → ING:  40°C=0  |  30°C=20  |  20°C=40  |  15°C=60  |  10°C=80  |  5°C=90  |  0°C=95  |  -10°C=100
+Temp → ING:  40°C=0  |  24°C=20  |  18°C=40  |  12°C=60  |  9°C=75  |  6°C=88  |  3°C=96  |  -10°C=100
 ```
 
 ## Decisiones de diseño
@@ -165,12 +165,13 @@ Corrección posterior:
 Cambios aplicados antes del cierre:
 
 - Se eliminó el nivel `[[pero-dale]]` del [[ranking-guisero]].
-- La escala quedó en 6 niveles: `+20°C`, `15–20°C`, `10–15°C`, `5–10°C`, `0–5°C`, `<0°C`.
-- `[[tengo-la-boca-seca]]` ahora cubre todo el rango `+20°C` y su receta pasó a ser un asado argentino con picada, birra fría y vino.
+- La escala quedó en 6 niveles: `<3°C`, `3–6°C`, `6–9°C`, `9–12°C`, `12–18°C`, `+18°C`.
+- `[[tengo-la-boca-seca]]` ahora cubre todo el rango `+18°C` y su receta pasó a ser un asado argentino con picada, birra fría y vino.
 - Se eliminaron `recetas/pero-dale.html` y `assets/memes/pero-dale.jpg`.
 - Se renumeraron las recetas activas como `Nivel 1/6` a `Nivel 6/6`.
 - `[[guiso-nacional]]` usa la imagen PNG local provista por el usuario: bandera argentina con sol sobre tela.
 - `README.md` ahora enlaza a esta memoria como fuente ampliada de decisiones del proyecto.
+- El orden visual del ranking se muestra de más frío a más cálido.
 
 ## Cierre de sesión — 2026-06-21
 
@@ -178,12 +179,12 @@ Cambios aplicados y publicados en [[github-pages]]:
 
 - Se hizo pull de `origin/main` y se trabajó sobre `index.html`.
 - Se reordenó la escala guisera de abajo hacia arriba:
-  - `<0°C` → 🇦🇷🍲 **Guiso Nacional**
-  - `0–5°C` → 🍲🔥 **Alto Guiso**
-  - `5–10°C` → ❄️🍲 **Ha venido el fresco**
-  - `10–15°C` → 👦🍲 **Y sí hijo**
-  - `15–20°C` → 🐑🍲 **Andás con frío**
-  - `+20°C` → 🥵 **Tengo la boca seca**
+  - `<3°C` → 🇦🇷🍲 **Guiso Nacional**
+  - `3–6°C` → 👦🍲 **¡Un guiso de fideos moñito! Y sí, hijo!**
+  - `6–9°C` → 🍲🔥 **Alto Guiso**
+  - `9–12°C` → 🐑🍲 **¡Oscar! ¿Qué te has puesto, una bufanda?**
+  - `12–18°C` → ❄️🍲 **¡Laaa mierda! Cómo se nota que ha venido el fresco, eh!**
+  - `+18°C` → 🥵 **Tengo la boca seca**
 - Se agregó una UI de [[ranking-guisero]] con nivel actual, descripción y lista de rangos.
 - Se dejó fijo el footer: `🛸 Un Argento al servicio del guiso.`
 - Se agregó favicon de guiso 🍲.

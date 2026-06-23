@@ -235,7 +235,7 @@
   .ranking-desc{color:var(--muted);font-size:.86rem;line-height:1.45;margin-bottom:12px}
   .rank-list{display:grid;gap:7px}
   .rank-item{
-    display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:8px;
+    display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;
     padding:8px 10px;border-radius:12px;
     border:1px solid rgba(255,255,255,.08);
     background:rgba(255,255,255,.03);
@@ -256,7 +256,7 @@
     box-shadow:0 0 22px rgba(255,210,63,.08);
   }
   .rank-mark{font-size:1rem}
-  .rank-name{font-weight:800;line-height:1.15}
+  .rank-name{font-weight:800;line-height:1.18;min-width:0}
   .rank-range{font-size:.72rem;color:inherit;opacity:.72;white-space:nowrap}
 
   .gps-hint{
@@ -434,19 +434,19 @@
   const themes=['theme-hot','theme-warm','theme-mild','theme-guiso','theme-cold','theme-freeze','theme-extreme'];
   function setTheme(t){
     document.body.classList.remove(...themes);
-    if(t>=30) document.body.classList.add('theme-hot');
-    else if(t>=20) document.body.classList.add('theme-warm');
-    else if(t>=15) document.body.classList.add('theme-mild');
-    else if(t>=10) document.body.classList.add('theme-guiso');
-    else if(t>=5)  document.body.classList.add('theme-cold');
-    else if(t>=0)  document.body.classList.add('theme-freeze');
+    if(t>=24) document.body.classList.add('theme-hot');
+    else if(t>=18) document.body.classList.add('theme-warm');
+    else if(t>=12) document.body.classList.add('theme-mild');
+    else if(t>=9)  document.body.classList.add('theme-guiso');
+    else if(t>=6)  document.body.classList.add('theme-cold');
+    else if(t>=3)  document.body.classList.add('theme-freeze');
     else           document.body.classList.add('theme-extreme');
   }
 
   // ---------- ING (Índice Guisero Nacional) ----------
   function tempToIng(t){
     const bp=[
-      [40, 0], [30, 20], [20, 40], [15, 60], [10, 80], [5, 90], [0, 95], [-10, 100]
+      [40, 0], [24, 20], [18, 40], [12, 60], [9, 75], [6, 88], [3, 96], [-10, 100]
     ];
     if(t>=bp[0][0]) return bp[0][1];
     if(t<=bp[bp.length-1][0]) return bp[bp.length-1][1];
@@ -469,12 +469,12 @@
 
   // ---------- Ranking guisero ----------
   const guisoRanks=[
-    {min:20, emoji:'🥵', title:'Tengo la boca seca', range:'+20°C', href:'recetas/tengo-la-boca-seca.html', meaning:'Calor fuerte, humo noble y sed nacional. No es noche de guiso: es territorio de parrilla.'},
-    {min:15, emoji:'🐑🍲', title:'Andás con frío', range:'15–20°C', href:'recetas/andas-con-frio.html', meaning:'Aparece la primera excusa. No es obligación, pero la idea empieza a caminar.'},
-    {min:10, emoji:'👦🍲', title:'Y sí hijo', range:'10–15°C', href:'recetas/y-si-hijo.html', meaning:'Zona guisera razonable. Ya podés defender la olla sin quedar exagerado.'},
-    {min:5, emoji:'❄️🍲', title:'Ha venido el fresco', range:'5–10°C', href:'recetas/ha-venido-el-fresco.html', meaning:'El frío se hizo presente. Se recomienda cucharón, pan y repetir plato.'},
-    {min:0, emoji:'🍲🔥', title:'Alto Guiso', range:'0–5°C', href:'recetas/alto-guiso.html', meaning:'Nivel serio: no es antojo, es respuesta climática. Olla grande, fuego bajo y orgullo nacional.'},
-    {min:-Infinity, emoji:'🇦🇷🍲', title:'Guiso Nacional', range:'<0°C', href:'recetas/guiso-nacional.html', meaning:'Emergencia guisera. La patria demanda plato hondo y segunda vuelta.'},
+    {min:18, level:6, emoji:'🥵', title:'Tengo la boca seca', range:'+18°C', href:'recetas/tengo-la-boca-seca.html', meaning:'Calor fuerte, humo noble y sed nacional. No es noche de guiso: es territorio de parrilla.'},
+    {min:12, level:5, emoji:'❄️🍲', title:'¡Laaa mierda! Cómo se nota que ha venido el fresco, eh!', range:'12–18°C', href:'recetas/ha-venido-el-fresco.html', meaning:'El fresco ya se hizo presente. Se recomienda olla grande, pan y repetir plato.'},
+    {min:9, level:4, emoji:'🐑🍲', title:'¡Oscar! ¿Qué te has puesto, una bufanda?', range:'9–12°C', href:'recetas/andas-con-frio.html', meaning:'Frío con bufanda imaginaria. La excusa del guiso ya está completamente defendida.'},
+    {min:6, level:3, emoji:'🍲🔥', title:'Alto Guiso', range:'6–9°C', href:'recetas/alto-guiso.html', meaning:'Nivel serio: no es antojo, es respuesta climática. Olla grande, fuego bajo y orgullo nacional.'},
+    {min:3, level:2, emoji:'👦🍲', title:'¡Un guiso de fideos moñito! Y sí, hijo!', range:'3–6°C', href:'recetas/y-si-hijo.html', meaning:'Zona guisera rotunda. El día pide fideo moñito, queso ralladito y cero debate.'},
+    {min:-Infinity, level:1, emoji:'🇦🇷🍲', title:'Guiso Nacional', range:'<3°C', href:'recetas/guiso-nacional.html', meaning:'Emergencia guisera. La patria demanda plato hondo y segunda vuelta.'},
   ];
 
   function rankForTemp(t){
@@ -485,12 +485,12 @@
   function updateRanking(t){
     const current = rankForTemp(t);
     rankingTitle.textContent = `${current.emoji} ${current.title}`;
-    rankingBadge.textContent = `Nivel ${current.index+1}/${guisoRanks.length}`;
+    rankingBadge.textContent = `Nivel ${current.level}/${guisoRanks.length}`;
     rankingBadge.href = current.href;
     rankingBadge.setAttribute('aria-label', `Abrir receta: ${current.title}`);
     rankingDesc.textContent = current.meaning;
-    rankList.innerHTML = guisoRanks.map((r,i)=>`
-      <a class="rank-item ${i===current.index?'active':''}" href="${r.href}" target="_blank" rel="noopener" aria-label="Abrir receta: ${r.title}">
+    rankList.innerHTML = [...guisoRanks].reverse().map(r=>`
+      <a class="rank-item ${r.href===current.href?'active':''}" href="${r.href}" target="_blank" rel="noopener" aria-label="Abrir receta: ${r.title}">
         <span class="rank-mark">${r.emoji}</span>
         <span class="rank-name">${r.title}</span>
         <span class="rank-range">${r.range}</span>
@@ -501,21 +501,21 @@
 
   // ---------- Escala guisera — frases de memes argentos ----------
   function guisoScale(t){
-    if(t>=20) return {emoji:'🥵',    title:'Tengo la boca seca',
+    if(t>=18) return {emoji:'🥵',    title:'Tengo la boca seca',
       desc:'Tengo la boca seca... ¿no tenés algo para tomar?',
       src:'— El Secreto de sus Ojos'};
-    if(t>=15) return {emoji:'🐑🍲', title:'Andás con frío',
-      desc:'¿Qué te has puesto una bufanda? ¿Andás con frío? Pero qué lindo te quedó.',
-      src:'— Oscar, andás con frío'};
-    if(t>=10) return {emoji:'👦🍲',    title:'Y sí hijo',
-      desc:'¿Guiso de fideos moñito? ¡Y SÍ HIJO!',
-      src:'— Johnny Primero de Mazo'};
-    if(t>=5)  return {emoji:'❄️🍲', title:'Ha venido el fresco',
-      desc:'La mierda che... ¡cómo se nota que ha venido el fresco eh! ¡Qué lo parió, qué friazazón!',
+    if(t>=12) return {emoji:'❄️🍲', title:'¡Laaa mierda! Cómo se nota que ha venido el fresco, eh!',
+      desc:'Laaa mierda! Cómo se nota que ha venido el fresco, eh!',
       src:'— Se congeló del frío'};
-    if(t>=0)  return {emoji:'🍲🔥', title:'Alto Guiso',
+    if(t>=9) return {emoji:'🐑🍲', title:'¡Oscar! ¿Qué te has puesto, una bufanda?',
+      desc:'Oscar! ¿Qué te has puesto, una bufanda?',
+      src:'— Oscar, andás con frío'};
+    if(t>=6)  return {emoji:'🍲🔥', title:'Alto Guiso',
       desc:'Con 15 pesos sale un paty. ¡Con 15 pesos me hago alto guiso!',
       src:'— El pibe del guiso'};
+    if(t>=3) return {emoji:'👦🍲',    title:'¡Un guiso de fideos moñito! Y sí, hijo!',
+      desc:'Un guiso de fideos moñito! Y sí, hijo!',
+      src:'— Johnny Primero de Mazo'};
     return            {emoji:'🇦🇷🍲', title:'Guiso Nacional',
       desc:'Sean eternos los laureles que supimos conseguir.',
       src:'— Himno Nacional Argentino'};
